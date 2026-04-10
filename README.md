@@ -1,7 +1,7 @@
 # FlowChain Inventory Risk Intelligence AI
 
 ## Overview
-This project focuses on building an AI-powered supply chain analytics system that detects inventory risks 
+This Product focuses on building an AI-powered supply chain analytics system that detects inventory risks 
 such as stockouts and overstock, and provides intelligent recommendations.
 
 ## Features (Planned)
