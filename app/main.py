@@ -123,7 +123,7 @@ if uploaded_file is not None:
         st.markdown("---")
         st.subheader("3. Summary Insights")
 
-        col1, col2 = #st.columns(2)
+        col1, col2 = #t.columns(2)
 
         with col1:
             st.metric("Stockout Risk Count", int(df["Stockout Risk"].sum()))
