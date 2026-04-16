@@ -21,10 +21,10 @@ if uploaded_file is not None:
     if missing_cols:
         st.error(f"Missing required columns: {missing_cols}")
     else:
-        avg_demand = df["Demand"].mean()
+        #avg_demand = df["Demand"].mean()
 
-        df["Stockout Risk"] = df["Inventory"] < (avg_demand * df["Lead Time"])
-        df["Overstock Risk"] = df["Inventory"] > (avg_demand * df["Lead Time"] * 2)
+        df["Stockout Risk"] = df["Inventory"] < (df["Demand"] * df["Lead Time"])
+        df["Overstock Risk"] = df["Inventory"] > (df["Demand"] * df["Lead Time"] * 2)
 
         def recommendation(row):
             if row["Stockout Risk"]:
