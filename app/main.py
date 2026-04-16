@@ -3,7 +3,7 @@ import pandas as pd
 
 st.set_page_config(page_title="FlowChain Inventory Risk Intelligence AI - MVP", layout="wide")
 
-st.title("FlowChain Inventory Risk Intelligence AI")
+st.title("FlowChain Inventory Risk Intelligence AI - MVP")
 st.write("Upload inventory data to identify stockout and overstock risks.")
 
 uploaded_file = st.file_uploader("Upload CSV file", type=["csv"])
