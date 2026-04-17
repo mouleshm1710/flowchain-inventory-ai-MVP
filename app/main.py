@@ -61,14 +61,26 @@ if uploaded_file is not None:
             ]
         )
 
-        # new code
+        # code for visualization/charts
         st.markdown("---")
         st.subheader("3. Visual Insights")
         st.markdown("#### Demand vs Inventory by SKU")
 
         chart_data = df.set_index("SKU")[["Demand", "Inventory"]]
         st.bar_chart(chart_data) 
-         # new code
+
+        st.markdown("#### Risk Distribution")
+
+        risk_counts = pd.DataFrame(
+            {
+                "Risk Type": ["Stockout Risk", "Overstock Risk"],
+                "Count": [df["Stockout Risk"].sum(), df["Overstock Risk"].sum()],
+            }
+        )
+        
+        st.bar_chart(risk_counts.set_index("Risk Type"))
+    
+
         
         st.markdown("---")
         st.subheader("4. Summary Insights")
