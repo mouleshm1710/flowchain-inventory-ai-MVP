@@ -63,7 +63,7 @@ if uploaded_file is not None:
 
         # code for visualization/charts
        st.markdown("---")
-    st.subheader("3. Visual Insights")
+       st.subheader("3. Visual Insights")
 
        col1, col2 = st.columns(2)
 
@@ -80,7 +80,7 @@ if uploaded_file is not None:
             "Count": [df["Stockout Risk"].sum(), df["Overstock Risk"].sum()],
             }
             )
-        #st.bar_chart(risk_counts.set_index("Risk Type"))
+        st.bar_chart(risk_counts.set_index("Risk Type"))
     
 
         
