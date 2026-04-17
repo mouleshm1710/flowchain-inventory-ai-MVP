@@ -43,9 +43,9 @@ if uploaded_file is not None:
     missing_cols = [col for col in required_cols if col not in df.columns]
 
     st.markdown("---")
-    st.markdown("Legend: 🔴 High Risk | 🟠 Medium Risk | ✅ Normal")
+    
     st.subheader("2. Risk Analysis")
-
+    st.markdown("Legend: 🔴 High Risk | 🟠 Medium Risk | ✅ Normal")
     if missing_cols:
         st.error(f"Missing required columns: {missing_cols}")
     else:
