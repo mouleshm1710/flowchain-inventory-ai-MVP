@@ -61,8 +61,17 @@ if uploaded_file is not None:
             ]
         )
 
+        # new code
         st.markdown("---")
-        st.subheader("3. Summary Insights")
+        st.subheader("3. Visual Insights")
+        st.markdown("#### Demand vs Inventory by SKU")
+
+        chart_data = df.set_index("SKU")[["Demand", "Inventory"]]
+        st.bar_chart(chart_data) 
+         # new code
+        
+        st.markdown("---")
+        st.subheader("4. Summary Insights")
 
         col1, col2 = st.columns(2)
 
