@@ -82,12 +82,12 @@ if uploaded_file is not None:
         st.markdown("---")
         st.subheader("3. Visual Insights")
 
-        col1 = st.columns(1)
+        #col1 = st.columns(1)
 
-        with col1:
-            st.markdown("#### Demand vs Inventory by SKU")
-            chart_data = df.groupby("SKU")[["Demand", "Inventory"]].mean()
-            st.bar_chart(chart_data)
+        #with col1:
+        st.markdown("#### Demand vs Inventory by SKU")
+        chart_data = df.groupby("SKU")[["Demand", "Inventory"]].mean()
+        st.bar_chart(chart_data)
 
         # with col2:
         #     st.markdown("#### Risk Distribution")
