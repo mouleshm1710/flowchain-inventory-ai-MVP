@@ -19,24 +19,37 @@ Demand Planners
 
 ## Key Features (Phase 1 MVP)
  Upload dataset (CSV) 
+ 
  Analyze demand and Inventory trends 
+ 
  Detect stockout risk 
+ 
  Detect overstock risk 
+ 
  Provide visualization
+ 
  Provide insights and recommendations
 
 ## Future Enhancements
  Demand forecasting models 
+ 
  Anomaly detection 
+ 
  AI-based Q&A system 
+ 
  Automated decision suggestions
+ 
  Real-time data integration
 
 ## Tech Stack
  Python 
+ 
  Pandas, NumPy 
- Streamlit 
+ 
+ Streamlit Cloud
+ 
  Machine Learning models 
+ 
  LLM APIs
 
 ## Expected Outcome
