@@ -123,7 +123,7 @@ if uploaded_file is not None:
             sku_df = df[df["SKU"] == selected_sku].copy()
             sku_df = sku_df.sort_values("Date")
 
-if len(sku_df) >= 3:
+            if len(sku_df) >= 3:
                 sku_df["Moving Average (3)"] = sku_df["Demand"].rolling(window=3).mean()
 
                 latest_demand = sku_df["Demand"].iloc[-1]
