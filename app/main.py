@@ -126,18 +126,6 @@ if uploaded_file is not None:
             if len(sku_df) >= 3:
                 sku_df["Moving Average (3)"] = sku_df["Demand"].rolling(window=3).mean().round(0).astype("Int64")
 
-                # latest_demand = sku_df["Demand"].iloc[-1]
-                # latest_ma = sku_df["Moving Average (3)"].iloc[-1]
-
-                # if pd.isna(latest_ma):
-                #     trend_label = "Insufficient data"
-                # elif latest_demand > latest_ma:
-                #     trend_label = "Increasing Trend"
-                # elif latest_demand < latest_ma:
-                #     trend_label = "Declining Trend"
-                # else:
-                #     trend_label = "Stable Trend"
-
                 latest_demand = sku_df["Demand"].iloc[-1]
                 latest_ma = sku_df["Moving Average (3)"].iloc[-1]
                 if pd.isna(latest_ma) or latest_ma == 0:
@@ -155,6 +143,11 @@ if uploaded_file is not None:
 
                 
                 st.markdown(f"**Trend Classification:** {trend_label}")
+                if deviation_pct is not None:
+                    st.write(f"Latest Demand: {int(latest_demand)}")
+                    st.write(f"3-Period Moving Average: {int(latest_ma)}")
+                    st.write(f"Demand Deviation vs Moving Average: {deviation_pct:.1f}%")
+    
                 trend_chart = sku_df.set_index("Date")[["Demand", "Moving Average (3)"]]
                 st.line_chart(trend_chart)
                 
