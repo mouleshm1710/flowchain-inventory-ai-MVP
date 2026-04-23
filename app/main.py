@@ -138,9 +138,8 @@ if uploaded_file is not None:
                 # else:
                 #     trend_label = "Stable Trend"
 
-                # latest_demand = sku_df["Demand"].iloc[-1]
-                # latest_ma = sku_df["Moving Average (3)"].iloc[-1]
-                
+                latest_demand = sku_df["Demand"].iloc[-1]
+                latest_ma = sku_df["Moving Average (3)"].iloc[-1]
                 if pd.isna(latest_ma) or latest_ma == 0:
                     trend_label = "Insufficient data"
                     deviation_pct = None
