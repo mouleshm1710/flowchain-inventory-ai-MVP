@@ -102,7 +102,7 @@ if uploaded_file is not None:
         # -------------------------------
         if "Date" in df.columns:
             st.markdown("---")
-            st.subheader("5. Demand Trend Analysis")
+            st.subheader("5. Demand Trend Analysis & Interpretation")
 
             sku_options = sorted(df["SKU"].dropna().unique().tolist())
             selected_sku = st.selectbox("Select SKU for Trend Analysis", sku_options)
@@ -159,16 +159,6 @@ if uploaded_file is not None:
                     st.write(
                         "There is not enough historical information available to interpret the current demand trend reliably."
                     )
-                                # if trend_label == "Increasing Trend":
-                #     insight_text = "Recent demand is trending above its short-term average, indicating a potential upward demand pattern."
-                # elif trend_label == "Declining Trend":
-                #     insight_text = "Recent demand is trending below its short-term average, indicating a potential softening in demand."
-                # elif trend_label == "Stable Trend":
-                #     insight_text = "Recent demand is close to its short-term average, indicating relatively stable demand behavior."
-                # else:
-                #     insight_text = "Not enough data is available to determine a demand trend."
-                
-                # st.info(insight_text)
                 
             else:
                 st.warning("At least 3 time periods are required for trend analysis.")
