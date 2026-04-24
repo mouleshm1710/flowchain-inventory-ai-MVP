@@ -254,4 +254,36 @@ if uploaded_file is not None:
                         st.error(f"Prophet forecasting failed: {e}")
                         forecast_output = None
 
+                if forecast_output is not None:
+                    st.markdown("#### Forecast Output")
+                    st.dataframe(forecast_output)
+        
+                    fig = go.Figure()
+        
+                    fig.add_trace(
+                        go.Scatter(
+                            x=ts_df["Date"],
+                            y=ts_df["Demand"],
+                            mode="lines+markers",
+                            name="Actual Demand"
+                        )
+                    )
+        
+                    fig.add_trace(
+                        go.Scatter(
+                            x=forecast_output["Date"],
+                            y=forecast_output["Forecasted Demand"],
+                            mode="lines+markers",
+                            name="Forecasted Demand"
+                        )
+                    )
+        
+                    fig.update_layout(
+                        title=f"Actual vs Forecasted Demand for {forecast_sku}",
+                        xaxis_title="Date",
+                        yaxis_title="Demand",
+                        legend_title="Series"
+                    )
+        
+                    st.plotly_chart(fig, use_container_width=True)
 
