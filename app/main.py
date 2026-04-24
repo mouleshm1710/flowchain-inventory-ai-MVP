@@ -172,10 +172,9 @@ if uploaded_file is not None:
                 st.warning("At least 3 time periods are required for trend analysis.")
 
 
-         -------------------------------
-        # Phase 2: Demand Forecasting Module
             # -------------------------------
-        if "Date" in df.columns:
+            # Phase 2: Demand Forecasting Module
+            # -------------------------------
             st.markdown("---")
             st.subheader("6. Demand Forecasting Module")
         
