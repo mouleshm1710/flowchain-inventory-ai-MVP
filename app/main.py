@@ -225,33 +225,33 @@ if uploaded_file is not None:
                             st.error(f"Holt-Winters forecasting failed: {e}")
                             forecast_output = None
 
-            elif selected_model == "Prophet":
-                try:
-                    prophet_df = ts_df.rename(columns={"Date": "ds", "Demand": "y"})
-                    model = Prophet(
-                    yearly_seasonality=False,
-                    weekly_seasonality=False,
-                    daily_seasonality=False
-                    )
-                    model.fit(prophet_df)
+                elif selected_model == "Prophet":
+                    try:
+                        prophet_df = ts_df.rename(columns={"Date": "ds", "Demand": "y"})
+                        model = Prophet(
+                        yearly_seasonality=False,
+                        weekly_seasonality=False,
+                        daily_seasonality=False
+                        )
+                        model.fit(prophet_df)
+        
+                        future = model.make_future_dataframe(
+                            periods=forecast_horizon,
+                            freq="MS"
+                        )
+        
+                        forecast = model.predict(future)
+        
+                        forecast_output = forecast[["ds", "yhat"]].tail(forecast_horizon)
+                        forecast_output = forecast_output.rename(
+                            columns={"ds": "Date", "yhat": "Forecasted Demand"}
+                        )
+                        forecast_output["Forecasted Demand"] = (
+                            forecast_output["Forecasted Demand"].round(0).astype(int)
+                        )
     
-                    future = model.make_future_dataframe(
-                        periods=forecast_horizon,
-                        freq="MS"
-                    )
-    
-                    forecast = model.predict(future)
-    
-                    forecast_output = forecast[["ds", "yhat"]].tail(forecast_horizon)
-                    forecast_output = forecast_output.rename(
-                        columns={"ds": "Date", "yhat": "Forecasted Demand"}
-                    )
-                    forecast_output["Forecasted Demand"] = (
-                        forecast_output["Forecasted Demand"].round(0).astype(int)
-                    )
-
-                except Exception as e:
-                    st.error(f"Prophet forecasting failed: {e}")
-                    forecast_output = None
+                    except Exception as e:
+                        st.error(f"Prophet forecasting failed: {e}")
+                        forecast_output = None
 
 
