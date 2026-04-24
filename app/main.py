@@ -191,3 +191,10 @@ if uploaded_file is not None:
                 model_options.append("Prophet")
 
             selected_model = st.selectbox("Select Forecasting Model", model_options)
+
+            if len(forecast_df) < 6:
+                st.warning("At least 6 historical periods are recommended for forecasting.")
+            else:
+                ts_df = forecast_df[["Date", "Demand"]].copy()
+                ts_df = ts_df.groupby("Date", as_index=False)["Demand"].sum()
+                ts_df = ts_df.sort_values("Date")
