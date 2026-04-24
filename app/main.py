@@ -170,3 +170,19 @@ if uploaded_file is not None:
                 
             else:
                 st.warning("At least 3 time periods are required for trend analysis.")
+
+
+         -------------------------------
+        # Phase 2: Demand Forecasting Module
+            # -------------------------------
+        if "Date" in df.columns:
+            st.markdown("---")
+            st.subheader("6. Demand Forecasting Module")
+        
+            forecast_sku_options = sorted(df["SKU"].dropna().unique().tolist())
+            forecast_sku = st.selectbox("Select SKU for Forecasting", forecast_sku_options)
+        
+            forecast_df = df[df["SKU"] == forecast_sku].copy()
+            forecast_df = forecast_df.sort_values("Date")
+        
+            forecast_horizon = st.selectbox("Forecast Horizon", [3, 6])
