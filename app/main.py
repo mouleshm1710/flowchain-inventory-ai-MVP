@@ -221,3 +221,6 @@ if uploaded_file is not None:
                             "Forecasted Demand": forecast_values.round(0).astype(int).values
                         })
                     
+                    except Exception as e:
+                            st.error(f"Holt-Winters forecasting failed: {e}")
+                            forecast_output = None
