@@ -184,7 +184,8 @@ if uploaded_file is not None:
             forecast_df = df[df["SKU"] == forecast_sku].copy()
             forecast_df = forecast_df.sort_values("Date")
         
-            forecast_horizon = st.selectbox("Forecast Horizon", [3, 6])
+            #forecast_horizon = st.selectbox("Forecast Horizon", [3, 6])
+            forecast_horizon = st.selectbox("Forecast Horizon (Months Ahead)",[3, 6])
 
             model_options = ["Holt-Winters"]
             if PROPHET_AVAILABLE:
@@ -209,9 +210,18 @@ if uploaded_file is not None:
                         fitted_model = model.fit()
                         forecast_values = fitted_model.forecast(forecast_horizon)
         
-                        last_date = ts_df["Date"].max()
+                        # last_date = ts_df["Date"].max()
+                        # future_dates = pd.date_range(
+                        #     start=last_date + pd.DateOffset(months=1),
+                        #     periods=forecast_horizon,
+                        #     freq="MS"
+                        # )
+
+                        last_date = pd.to_datetime(ts_df["Date"].max())
+                        next_month_start = last_date + pd.offsets.MonthBegin(1)
+                        
                         future_dates = pd.date_range(
-                            start=last_date + pd.DateOffset(months=1),
+                            start=next_month_start,
                             periods=forecast_horizon,
                             freq="MS"
                         )
