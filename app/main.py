@@ -3,6 +3,12 @@ import pandas as pd
 from statsmodels.tsa.holtwinters import ExponentialSmoothing
 import plotly.graph_objects as go
 
+try:
+    from prophet import Prophet
+    PROPHET_AVAILABLE = True
+except Exception:
+    PROPHET_AVAILABLE = False
+
 st.set_page_config(page_title="FlowChain Inventory Risk Intelligence AI - MVP", layout="wide")
 
 st.title("FlowChain Inventory Risk Intelligence AI - MVP")
