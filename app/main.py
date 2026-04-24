@@ -198,3 +198,26 @@ if uploaded_file is not None:
                 ts_df = forecast_df[["Date", "Demand"]].copy()
                 ts_df = ts_df.groupby("Date", as_index=False)["Demand"].sum()
                 ts_df = ts_df.sort_values("Date")
+
+                if selected_model == "Holt-Winters":
+                    try:
+                        model = ExponentialSmoothing(
+                            ts_df["Demand"],
+                            trend="add",
+                            seasonal=None
+                        )
+                        fitted_model = model.fit()
+                        forecast_values = fitted_model.forecast(forecast_horizon)
+        
+                        last_date = ts_df["Date"].max()
+                        future_dates = pd.date_range(
+                            start=last_date + pd.DateOffset(months=1),
+                            periods=forecast_horizon,
+                            freq="MS"
+                        )
+        
+                        forecast_output = pd.DataFrame({
+                            "Date": future_dates,
+                            "Forecasted Demand": forecast_values.round(0).astype(int).values
+                        })
+                    
