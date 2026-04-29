@@ -35,7 +35,12 @@ if uploaded_file is not None:
 
     # Force monthly granularity using month-start dates
     if "Date" in df.columns:
-        df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+        #df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+        df["Date"] = pd.to_datetime(
+                            df["Date"],
+                            dayfirst=True,
+                            errors="coerce"
+                        )
         df["Date"] = df["Date"].dt.to_period("M").dt.to_timestamp()
 
     if "Region" in df.columns:
