@@ -336,3 +336,6 @@ if uploaded_file is not None:
                         forecast_direction = "Falling"
                     else:
                         forecast_direction = "Stable"
+                        
+                    # Get latest row for selected forecast SKU
+        latest_row = df[df["SKU"] == forecast_sku].sort_values("Date").iloc[-1]
