@@ -342,3 +342,6 @@ if uploaded_file is not None:
 
                     stockout_flag = latest_row["Stockout Risk"]
                     overstock_flag = latest_row["Overstock Risk"]
+                    # Default recommendation
+                    priority_level = "Low"
+                    insight_title = "✅ Stable Operational Signal"
