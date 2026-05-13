@@ -364,3 +364,7 @@ if uploaded_file is not None:
                     elif overstock_flag and forecast_direction == "Falling":
                          priority_level = "Medium"
                          insight_title = "🟠 Inventory Exposure Monitoring Recommended"
+                         recommendation_text = (
+                            "Forecasted demand is softening while inventory levels indicate potential excess exposure. "
+                            "Monitor inventory levels and review demand planning assumptions."
+                        )
