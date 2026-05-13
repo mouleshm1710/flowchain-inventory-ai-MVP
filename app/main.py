@@ -405,3 +405,4 @@ if uploaded_file is not None:
                         ],
                     }
                     )
+                    st.dataframe(signal_df, use_container_width=True)
