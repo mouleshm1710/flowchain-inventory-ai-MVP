@@ -380,3 +380,6 @@ if uploaded_file is not None:
 
                     st.markdown(f"### {insight_title}")
                     st.write(f"**Priority Level:** {priority_level}")
+                    
+                    st.markdown("#### Recommendation")
+                    st.write(recommendation_text)
