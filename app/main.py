@@ -385,3 +385,23 @@ if uploaded_file is not None:
                     st.write(recommendation_text)
 
                     st.markdown("#### Supporting Signals")
+                    signal_df = pd.DataFrame(
+                    {
+                        "Signal": [
+                            "Selected SKU",
+                            "Forecast Direction",
+                            "Latest Actual Demand",
+                            "Average Forecasted Demand",
+                            "Stockout Risk",
+                            "Overstock Risk",
+                        ],
+                        "Current Value": [
+                            forecast_sku,
+                            forecast_direction,
+                            int(latest_actual),
+                            int(round(avg_forecast, 0)),
+                            stockout_flag,
+                            overstock_flag,
+                        ],
+                    }
+                    )
