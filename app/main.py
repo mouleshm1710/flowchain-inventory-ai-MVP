@@ -354,10 +354,10 @@ if uploaded_file is not None:
                     if stockout_flag and forecast_direction == "Rising":
                         priority_level = "High"
                         insight_title = "🔴 Replenishment Attention Recommended"
-                    recommendation_text = (
-                        "Forecasted demand is rising while current inventory levels indicate stockout exposure. "
-                        "Review replenishment planning and inventory positioning to reduce potential availability risk."
-                    )
+                        recommendation_text = (
+                            "Forecasted demand is rising while current inventory levels indicate stockout exposure. "
+                            "Review replenishment planning and inventory positioning to reduce potential availability risk."
+                        )
 
 
                     # Insight rule 2: overstock + falling demand
