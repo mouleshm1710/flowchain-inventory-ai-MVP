@@ -368,3 +368,12 @@ if uploaded_file is not None:
                             "Forecasted demand is softening while inventory levels indicate potential excess exposure. "
                             "Monitor inventory levels and review demand planning assumptions."
                         )
+
+                    # Insight rule 3: mixed demand signal
+                    elif forecast_direction != "Stable":
+                        priority_level = "Medium"
+                        insight_title = "🟠 Demand Movement Detected"
+                        recommendation_text = (
+                            "Forecast output indicates a directional change in demand. "
+                            "Continue monitoring this SKU and validate whether inventory planning needs adjustment."
+                        )
