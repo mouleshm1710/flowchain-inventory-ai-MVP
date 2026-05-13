@@ -361,3 +361,6 @@ if uploaded_file is not None:
 
 
                     # Insight rule 2: overstock + falling demand
+                    elif overstock_flag and forecast_direction == "Falling":
+                         priority_level = "Medium"
+                         insight_title = "🟠 Inventory Exposure Monitoring Recommended"
