@@ -1,11 +1,20 @@
 import streamlit as st
 import pandas as pd
+from statsmodels.tsa.holtwinters import ExponentialSmoothing
+import plotly.graph_objects as go
+
+try:
+    from prophet import Prophet
+    PROPHET_AVAILABLE = True
+except Exception:
+    PROPHET_AVAILABLE = False
+
 
 st.set_page_config(page_title="FlowChain Inventory Risk Intelligence AI - MVP", layout="wide")
 
 st.title("FlowChain Inventory Risk Intelligence AI - MVP")
 st.markdown(
-    "Analyze inventory data to identify **stockout** and **overstock** risks using a simple rule-based decision support workflow."
+    "Analyze inventory data to identify **stockout** and **overstock** risks using a simple rule-based decision support workflow. Provide insights on demand trends with future projections"
 )
 st.markdown("---")
 
@@ -17,25 +26,39 @@ with col1:
 with col2:
     st.info(
         "Required columns: SKU, Demand, Inventory, Lead Time.\n\n"
-        "Optional columns: Price, Promotion, Region, Category."
+        "Optional columns: Price, Promotion, Region, Category, Date."
     )
 
 
-
-    
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
 
-    #adding "region" filter
-    selected_region = st.selectbox("Select Region", ["All"] + list(df["Region"].unique()))
-    if selected_region != "All":
-        df = df[df["Region"] == selected_region]
+    # Force monthly granularity using month-start dates
+    if "Date" in df.columns:
+        #df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+        df["Date"] = pd.to_datetime(
+                            df["Date"],
+                            dayfirst=True,
+                            errors="coerce"
+                        )
+        df["Date"] = df["Date"].dt.to_period("M").dt.to_timestamp()
 
-    #adding "category" filter
-    selected_category = st.selectbox("Select Category", ["All"] + list(df["Category"].unique()))
-    if selected_category != "All":
-        df = df[df["Category"] == selected_category]
-    
+    if "Region" in df.columns:
+        selected_region = st.selectbox(
+            "Select Region",
+            ["All"] + sorted(df["Region"].dropna().unique().tolist())
+        )
+        if selected_region != "All":
+            df = df[df["Region"] == selected_region]
+
+    if "Category" in df.columns:
+        selected_category = st.selectbox(
+            "Select Category",
+            ["All"] + sorted(df["Category"].dropna().unique().tolist())
+        )
+        if selected_category != "All":
+            df = df[df["Category"] == selected_category]
+
     st.subheader("1. Dataset Preview")
     st.dataframe(df)
 
@@ -43,9 +66,9 @@ if uploaded_file is not None:
     missing_cols = [col for col in required_cols if col not in df.columns]
 
     st.markdown("---")
-    
     st.subheader("2. Risk Analysis")
     st.markdown("Legend: 🔴 High Risk | 🟠 Medium Risk | ✅ Normal")
+
     if missing_cols:
         st.error(f"Missing required columns: {missing_cols}")
     else:
@@ -75,28 +98,13 @@ if uploaded_file is not None:
             ]
         )
 
-        # code for visualization/charts
         st.markdown("---")
         st.subheader("3. Visual Insights")
 
-        col1, col2 = st.columns(2)
+        st.markdown("#### Demand vs Inventory by SKU")
+        chart_data = df.groupby("SKU")[["Demand", "Inventory"]].mean()
+        st.bar_chart(chart_data)
 
-        with col1:
-            st.markdown("#### Demand vs Inventory by SKU")
-            chart_data = df.set_index("SKU")[["Demand", "Inventory"]]
-            st.bar_chart(chart_data)
-
-        with col2:
-            st.markdown("#### Risk Distribution")
-            risk_counts = pd.DataFrame(
-            {
-            "Risk Type": ["Stockout Risk", "Overstock Risk"],
-            "Count": [df["Stockout Risk"].sum(), df["Overstock Risk"].sum()],
-            })
-            st.bar_chart(risk_counts.set_index("Risk Type"))
-    
-
-        
         st.markdown("---")
         st.subheader("4. Summary Insights")
 
@@ -107,3 +115,213 @@ if uploaded_file is not None:
 
         with col2:
             st.metric("Overstock Risk Count", int(df["Overstock Risk"].sum()))
+
+        # -------------------------------
+        # Phase 2: Demand Trend Analysis
+        # -------------------------------
+        if "Date" in df.columns:
+            st.markdown("---")
+            st.subheader("5. Demand Trend Analysis & Interpretation")
+
+            sku_options = sorted(df["SKU"].dropna().unique().tolist())
+            selected_sku = st.selectbox("Select SKU for Trend Analysis", sku_options)
+
+            sku_df = df[df["SKU"] == selected_sku].copy()
+            sku_df = sku_df.sort_values("Date")
+
+            if len(sku_df) >= 3:
+                sku_df["Moving Average (3)"] = (
+                    sku_df["Demand"]
+                    .rolling(window=3)
+                    .mean()
+                    .round(0)
+                    .astype("Int64")
+                )
+
+                latest_demand = sku_df["Demand"].iloc[-1]
+                latest_ma = sku_df["Moving Average (3)"].iloc[-1]
+
+                if pd.isna(latest_ma) or latest_ma == 0:
+                    trend_label = "Insufficient data"
+                    deviation_pct = None
+                else:
+                    deviation_pct = ((latest_demand - latest_ma) / latest_ma) * 100
+
+                    if deviation_pct > 5:
+                        trend_label = "Increasing Trend"
+                    elif deviation_pct < -5:
+                        trend_label = "Declining Trend"
+                    else:
+                        trend_label = "Stable Trend"
+
+                st.markdown(f"**Trend Classification:** {trend_label}")
+
+                if deviation_pct is not None:
+                    st.write(f"Latest Demand: {int(latest_demand)}")
+                    st.write(f"3-Period Moving Average: {int(latest_ma)}")
+                    st.write(f"Demand Deviation vs Moving Average: {deviation_pct:.1f}%")
+
+                trend_chart = sku_df.set_index("Date")[["Demand", "Moving Average (3)"]]
+                st.line_chart(trend_chart)
+
+                st.markdown("#### Trend Interpretation")
+
+                if trend_label == "Increasing Trend":
+                    st.write(
+                        "Recent demand is moving above its short-term average, which may indicate strengthening product movement. "
+                        "This pattern can be monitored further to assess whether inventory planning needs to be adjusted."
+                    )
+                elif trend_label == "Declining Trend":
+                    st.write(
+                        "Recent demand is moving below its short-term average, which may indicate softening product movement. "
+                        "This pattern can be reviewed further to assess whether inventory exposure should be watched closely."
+                    )
+                elif trend_label == "Stable Trend":
+                    st.write(
+                        "Recent demand is staying close to its short-term average, suggesting relatively stable product movement "
+                        "over the observed periods."
+                    )
+                else:
+                    st.write(
+                        "There is not enough historical information available to interpret the current demand trend reliably."
+                    )
+
+            else:
+                st.warning("At least 3 time periods are required for trend analysis.")
+
+            # -------------------------------
+            # Phase 2: Demand Forecasting Module
+            # -------------------------------
+            st.markdown("---")
+            st.subheader("6. Demand Forecasting Module")
+
+            forecast_sku_options = sorted(df["SKU"].dropna().unique().tolist())
+            forecast_sku = st.selectbox("Select SKU for Forecasting", forecast_sku_options)
+
+            forecast_df = df[df["SKU"] == forecast_sku].copy()
+
+            forecast_horizon = st.selectbox(
+                "Forecast Horizon (Months Ahead)",
+                [3, 6]
+            )
+
+            st.caption(
+                "Forecasts are generated at monthly granularity. Historical dates are normalized to month-start dates."
+            )
+
+            model_options = ["Holt-Winters"]
+            if PROPHET_AVAILABLE:
+                model_options.append("Prophet")
+
+            selected_model = st.selectbox("Select Forecasting Model", model_options)
+
+            if len(forecast_df) < 6:
+                st.warning("At least 6 historical periods are recommended for forecasting.")
+            else:
+                ts_df = forecast_df[["Date", "Demand"]].copy()
+
+                # Ensure monthly historical series
+                ts_df["Date"] = pd.to_datetime(ts_df["Date"], errors="coerce")
+                ts_df["Date"] = ts_df["Date"].dt.to_period("M").dt.to_timestamp()
+
+                ts_df = ts_df.groupby("Date", as_index=False)["Demand"].sum()
+                ts_df = ts_df.sort_values("Date")
+
+                forecast_output = None
+
+                if selected_model == "Holt-Winters":
+                    try:
+                        model = ExponentialSmoothing(
+                            ts_df["Demand"],
+                            trend="add",
+                            seasonal=None
+                        )
+                        fitted_model = model.fit()
+                        forecast_values = fitted_model.forecast(forecast_horizon)
+
+                        last_date = pd.to_datetime(ts_df["Date"].max())
+                        next_month_start = last_date + pd.offsets.MonthBegin(1)
+
+                        future_dates = pd.date_range(
+                            start=next_month_start,
+                            periods=forecast_horizon,
+                            freq="MS"
+                        )
+
+                        forecast_output = pd.DataFrame({
+                            "Date": future_dates,
+                            "Forecasted Demand": forecast_values.round(0).astype(int).values
+                        })
+
+                    except Exception as e:
+                        st.error(f"Holt-Winters forecasting failed: {e}")
+
+                elif selected_model == "Prophet":
+                    try:
+                        prophet_df = ts_df.rename(columns={"Date": "ds", "Demand": "y"})
+
+                        model = Prophet(
+                            yearly_seasonality=False,
+                            weekly_seasonality=False,
+                            daily_seasonality=False
+                        )
+                        model.fit(prophet_df)
+
+                        future = model.make_future_dataframe(
+                            periods=forecast_horizon,
+                            freq="MS"
+                        )
+
+                        forecast = model.predict(future)
+
+                        forecast_output = forecast[["ds", "yhat"]].tail(forecast_horizon)
+                        forecast_output = forecast_output.rename(
+                            columns={"ds": "Date", "yhat": "Forecasted Demand"}
+                        )
+                        forecast_output["Date"] = pd.to_datetime(forecast_output["Date"])
+                        forecast_output["Date"] = forecast_output["Date"].dt.to_period("M").dt.to_timestamp()
+                        forecast_output["Forecasted Demand"] = (
+                            forecast_output["Forecasted Demand"].round(0).astype(int)
+                        )
+
+                    except Exception as e:
+                        st.error(f"Prophet forecasting failed: {e}")
+
+                if forecast_output is not None:
+                    #st.markdown("#### Forecast Output")
+                    #st.dataframe(forecast_output)
+
+                    fig = go.Figure()
+
+                    fig.add_trace(
+                        go.Scatter(
+                            x=ts_df["Date"],
+                            y=ts_df["Demand"],
+                            mode="lines+markers",
+                            name="Actual Demand"
+                        )
+                    )
+
+                    fig.add_trace(
+                        go.Scatter(
+                            x=forecast_output["Date"],
+                            y=forecast_output["Forecasted Demand"],
+                            mode="lines+markers",
+                            name="Forecasted Demand"
+                        )
+                    )
+
+                    fig.update_layout(
+                        title=f"Actual vs Forecasted Monthly Demand for {forecast_sku}",
+                        xaxis_title="Month",
+                        yaxis_title="Demand",
+                        legend_title="Series"
+                    )
+
+                    st.plotly_chart(fig, use_container_width=True)
+                    
+                    # -------------------------------
+                    # Phase 2: Insight Recommendation Module
+                    # -------------------------------
+                    st.markdown("---")
+                    st.subheader("7. Insight Recommendation Module")
