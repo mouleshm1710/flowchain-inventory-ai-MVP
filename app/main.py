@@ -334,3 +334,5 @@ if uploaded_file is not None:
                         forecast_direction = "Rising"
                     elif avg_forecast < latest_actual * 0.95:
                         forecast_direction = "Falling"
+                    else:
+                        forecast_direction = "Stable"
