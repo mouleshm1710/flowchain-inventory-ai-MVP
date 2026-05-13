@@ -377,3 +377,6 @@ if uploaded_file is not None:
                             "Forecast output indicates a directional change in demand. "
                             "Continue monitoring this SKU and validate whether inventory planning needs adjustment."
                         )
+
+                    st.markdown(f"### {insight_title}")
+                    st.write(f"**Priority Level:** {priority_level}")
