@@ -328,3 +328,9 @@ if uploaded_file is not None:
 
                     latest_actual = ts_df["Demand"].iloc[-1]
                     avg_forecast = forecast_output["Forecasted Demand"].mean()
+
+                    # Forecast direction logic
+                    if avg_forecast > latest_actual * 1.05:
+                        forecast_direction = "Rising"
+                    elif avg_forecast < latest_actual * 0.95:
+                        forecast_direction = "Falling"
