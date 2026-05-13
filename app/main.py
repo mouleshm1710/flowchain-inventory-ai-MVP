@@ -350,3 +350,8 @@ if uploaded_file is not None:
                             "No immediate operational action is recommended."
                         )
                     
+                    # Insight rule 1: stockout + rising demand
+                    if stockout_flag and forecast_direction == "Rising":
+                        priority_level = "High"
+                        insight_title = "🔴 Replenishment Attention Recommended"
+                        
