@@ -325,3 +325,6 @@ if uploaded_file is not None:
                     # -------------------------------
                     st.markdown("---")
                     st.subheader("7. Insight Recommendation Module")
+
+                    latest_actual = ts_df["Demand"].iloc[-1]
+                    avg_forecast = forecast_output["Forecasted Demand"].mean()
