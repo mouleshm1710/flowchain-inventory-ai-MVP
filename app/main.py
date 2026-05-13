@@ -345,3 +345,8 @@ if uploaded_file is not None:
                     # Default recommendation
                     priority_level = "Low"
                     insight_title = "✅ Stable Operational Signal"
+                    recommendation_text = (
+                    "Current demand, forecast, and inventory signals appear relatively stable. "
+                            "No immediate operational action is recommended."
+                        )
+                    
