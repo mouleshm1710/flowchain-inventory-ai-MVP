@@ -358,3 +358,6 @@ if uploaded_file is not None:
                         "Forecasted demand is rising while current inventory levels indicate stockout exposure. "
                         "Review replenishment planning and inventory positioning to reduce potential availability risk."
                     )
+
+
+                    # Insight rule 2: overstock + falling demand
